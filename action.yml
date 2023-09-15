@@ -1,0 +1,120 @@
+name: 'Upload Android App Bundle to Google Play Store'
+description: 'Uploads an Android App Bundle (.aab file) to the Google Play Store using the Play Developer API'
+
+
+inputs:
+  service_account_json:
+    description: 'Base64 encoded service account JSON key'
+    required: true
+  package_name:
+    description: 'Android package name'
+    required: true
+  aab_file_path:
+    description: 'Path to the .aab file'
+    required: true
+  track:
+    description: 'Can be internal, alpha, beta, production or rollout'
+    required: true
+    default: 'internal'
+  release_status:
+    description: 'Release status (e.g., draft, completed)'
+    required: true
+    default: 'draft'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Validate Inputs
+      shell: bash
+      run: |
+        valid_tracks=("internal" "alpha" "beta" "production" "rollout")
+        valid_statuses=("draft" "completed" "halted" "inProgress")
+        aab_file_path="${{ inputs.aab_file_path }}"
+        track="${{ inputs.track }}"
+        status="${{ inputs.release_status }}"
+
+        if [[ ! " ${valid_tracks[@]} " =~ " ${track} " ]]; then
+          echo "Invalid track: $track. Valid options are ${valid_tracks[@]}"
+          exit 1
+        fi
+
+        if [[ ! " ${valid_statuses[@]} " =~ " ${status} " ]]; then
+          echo "Invalid release status: $status. Valid options are ${valid_statuses[@]}"
+          exit 1
+        fi
+
+        if [[ ! -f "$aab_file_path" ]]; then
+          echo "The specified .aab file does not exist: $aab_file_path"
+          exit 1
+        fi
+
+    - name: Install Google API Client Libraries
+      shell: bash
+      run: |
+        pip install --upgrade google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+
+    - name: Decode Service Account JSON and Save
+      shell: bash
+      run: |
+        echo "${{ inputs.service_account_json }}" | base64 --decode > service_account.json
+
+    - name: Upload .aab to Google Play Store
+      shell: python
+      run: |
+        from google.oauth2.service_account import Credentials
+        from googleapiclient.discovery import build
+        from googleapiclient.http import MediaFileUpload
+
+        credentials = Credentials.from_service_account_file(
+            "service_account.json",
+            scopes=["https://www.googleapis.com/auth/androidpublisher"]
+        )
+        androidpublisher = build('androidpublisher', 'v3', credentials=credentials)
+
+        edits = androidpublisher.edits()
+        edit_request = edits.insert(body={}, packageName="${{ inputs.package_name }}")
+        edit = edit_request.execute()
+        edit_id = edit['id']
+
+        media_upload = MediaFileUpload("${{ inputs.aab_file_path }}", mimetype='application/octet-stream', resumable=True)
+
+        # Upload the App Bundle
+        aab_upload_response = androidpublisher.edits().bundles().upload(
+            editId=edit_id,
+            packageName="${{ inputs.package_name }}",
+            media_body=media_upload
+        ).execute()
+        version_code = aab_upload_response['versionCode']
+
+        track_config = {
+            'releases': [
+                {
+                    'versionCodes': [version_code],
+                    'status': "${{ inputs.release_status }}"
+                }
+            ]
+        }
+        track_update_response = androidpublisher.edits().tracks().update(
+            editId=edit_id,
+            track="${{ inputs.track }}",
+            packageName="${{ inputs.package_name }}",
+            body=track_config
+        ).execute()
+
+        commit_request = edits.commit(
+            editId=edit_id,
+            packageName="${{ inputs.package_name }}"
+        )
+        commit_request.execute()
+
+        print(f"Successfully uploaded ${{ inputs.aab_file_path }} to ${{ inputs.package_name }} on ${{ inputs.track }} track.")
+
+    - name: Remove Service Account JSON
+      shell: bash
+      run: |
+        rm -f service_account.json
