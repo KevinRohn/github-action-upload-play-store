@@ -60,24 +60,24 @@ This action allows you to automatically upload an Android App Bundle to the Goog
 
 The action supports the following inputs:
 
-- `service_account_json`
-  Base64 encoded service account JSON key for Google Cloud with access to the Play Developer API.
+- `service_account_json`  
+  Base64 encoded service account JSON key for Google Cloud with access to the Play Developer API.  
   **Required:** *true*
 
-- `package_name`
-  Android package name as defined in `AndroidManifest.xml`.
+- `package_name`  
+  Android package name as defined in `AndroidManifest.xml`.  
   **Required:** *true*
 
-- `aab_file_path`
-  File path to the Android App Bundle (.aab) you wish to upload.
+- `aab_file_path`  
+  File path to the Android App Bundle (.aab) you wish to upload.  
   **Required:** *true*
 
-- `track`
-  The track where you want to upload the `.aab` file. Available options: `internal`, `alpha`, `beta`, `production`, `rollout`.
+- `track`  
+  The track where you want to upload the `.aab` file. Available options: `internal`, `alpha`, `beta`, `production`, `rollout`.  
   **Required:** *true*
 
-- `release_status`
-  Release status of the app. Available options: `draft`, `completed`, `halted`, `inProgress`.
+- `release_status`  
+  Release status of the app. Available options: `draft`, `completed`, `halted`, `inProgress`.  
   **Required:** *true*
 
 ## Outputs
