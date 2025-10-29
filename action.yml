@@ -1,6 +1,6 @@
-name: 'Upload Android App Bundle to Google Play Store'
+name: 'Upload Android App Bundle to Google Play Store (fixed)'
 description: 'Uploads an Android App Bundle (.aab file) to the Google Play Store using the Play Developer API'
-author: Kevin Rohn
+author: excalibur-enterprise
 
 branding:
   icon: 'upload-cloud'
@@ -60,7 +60,7 @@ runs:
     - name: Install Google API Client Libraries
       shell: bash
       run: |
-        pip install --upgrade google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+        pip install --upgrade packaging google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
     - name: Decode Service Account JSON and Save
       shell: bash
