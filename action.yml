@@ -60,7 +60,7 @@ runs:
     - name: Install Google API Client Libraries
       shell: bash
       run: |
-        pip install --upgrade google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+        pip install --upgrade packaging google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
     - name: Decode Service Account JSON and Save
       shell: bash
