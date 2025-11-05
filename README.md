@@ -51,6 +51,21 @@ Supports all release tracks (internal, alpha, beta, production) and release stat
     release_status: "completed"
 ```
 
+### Upload a large AAB file with custom timeout
+
+```yaml
+- name: Upload Large .aab with Extended Timeout
+  id: upload_large_aab
+  uses: KevinRohn/github-action-upload-play-store@v1.0.2
+  with:
+    service_account_json: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+    package_name: "com.example.myapp"
+    aab_file_path: "./build/outputs/bundle/release/app-release.aab"
+    track: "internal"
+    release_status: "draft"
+    timeout: 600
+```
+
 ## Inputs
 
 The action supports the following inputs:
@@ -71,9 +86,14 @@ The action supports the following inputs:
   The track where you want to upload the `.aab` file. Available options: `internal`, `alpha`, `beta`, `production`, `rollout`.  
   **Required:** *true*
 
-- `release_status`  
-  Release status of the app. Available options: `draft`, `completed`, `halted`, `inProgress`.  
+- `release_status`
+  Release status of the app. Available options: `draft`, `completed`, `halted`, `inProgress`.
   **Required:** *true*
+
+- `timeout`
+  Timeout in seconds for upload operations.
+  **Required:** *false*
+  **Default:** `300`
 
 ## Outputs
 

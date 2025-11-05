@@ -24,6 +24,10 @@ inputs:
     description: 'Release status (e.g., draft, completed)'
     required: true
     default: 'draft'
+  timeout:
+    description: 'Timeout in seconds for upload operations'
+    required: false
+    default: '300'
 
 runs:
   using: 'composite'
@@ -73,12 +77,16 @@ runs:
         from google.oauth2.service_account import Credentials
         from googleapiclient.discovery import build
         from googleapiclient.http import MediaFileUpload
+        import httplib2
 
         credentials = Credentials.from_service_account_file(
             "service_account.json",
             scopes=["https://www.googleapis.com/auth/androidpublisher"]
         )
-        androidpublisher = build('androidpublisher', 'v3', credentials=credentials)
+
+        http = httplib2.Http(timeout=${{ inputs.timeout }})
+        authorized_http = credentials.authorize(http)
+        androidpublisher = build('androidpublisher', 'v3', http=authorized_http)
 
         edits = androidpublisher.edits()
         edit_request = edits.insert(body={}, packageName="${{ inputs.package_name }}")
