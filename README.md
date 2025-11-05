@@ -1,14 +1,9 @@
-# :package: GitHub Action `Upload Android App Bundle to Google Play Store`
+# Upload to Google Play Store
 
-> A GitHub Action to upload an Android App Bundle (.aab file) to the Google Play Store using the Play Developer API.
+> GitHub Action for uploading Android App Bundles (.aab) to the Google Play Store using the Play Developer API.
 
-## :question: Why use this GitHub Action?
-
-Uploading an Android App Bundle (.aab) to the Google Play Store is an essential step in the Android development process. Doing this manually can be time-consuming and error-prone, especially for CI/CD pipelines. This GitHub Action automates the upload process using the Play Developer API, making it convenient and reliable.
-
-## About
-
-This action allows you to automatically upload an Android App Bundle to the Google Play Store. You can specify various parameters like the package name, track for the release, and release status. It supports both public and private repositories.
+Automates the upload process in your CI/CD pipeline, eliminating manual uploads through the Play Console. 
+Supports all release tracks (internal, alpha, beta, production) and release statuses (draft, completed, halted, inProgress).
 
 ## Usage
 
@@ -17,7 +12,7 @@ This action allows you to automatically upload an Android App Bundle to the Goog
 ```yaml
 - name: Upload Android App Bundle to Google Play Store
   id: upload_aab
-  uses: KevinRohn/github-action-upload-play-store@v1.0.0
+  uses: KevinRohn/github-action-upload-play-store@v1.0.2
   with:
     service_account_json: ${{ secrets.SERVICE_ACCOUNT_JSON }}
     package_name: "com.example.myapp"
@@ -33,7 +28,7 @@ This action allows you to automatically upload an Android App Bundle to the Goog
 ```yaml
 - name: Upload .aab to Internal Track
   id: upload_internal
-  uses: KevinRohn/github-action-upload-play-store@v1.0.0
+  uses: KevinRohn/github-action-upload-play-store@v1.0.2
   with:
     service_account_json: ${{ secrets.SERVICE_ACCOUNT_JSON }}
     package_name: "com.example.myapp"
@@ -47,7 +42,7 @@ This action allows you to automatically upload an Android App Bundle to the Goog
 ```yaml
 - name: Upload .aab to Production Track
   id: upload_production
-  uses: KevinRohn/github-action-upload-play-store@v1.0.0
+  uses: KevinRohn/github-action-upload-play-store@v1.0.2
   with:
     service_account_json: ${{ secrets.SERVICE_ACCOUNT_JSON }}
     package_name: "com.example.myapp"
